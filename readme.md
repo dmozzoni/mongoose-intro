@@ -9,11 +9,11 @@
 - List and describe common Mongoose queries
 - Persist data using Mongoose embedded documents
 
-## Opening Framing (10 minutes / 0:10)
+## Opening Framing
 
-In previous WDI units you've used ActiveRecord to interact with and perform CRUD actions on a SQL database through a Ruby back-end. Today, we'll be doing the equivalent with a tool called Mongoose on a NoSQL database using a Node back-end.
+In previous WDI units, we used ActiveRecord to interact with and perform CRUD actions on a SQL database through a Ruby back-end. Today, we'll be doing the equivalent with a tool called Mongoose on a NoSQL database using a Node back-end.
 
-Before we dive into Mongoose, however, let's talk a bit about about last night's homework. You were tasked with looking through the Mongo lesson plan and familiarizing yourself with a NoSQL database. **What are some of your takeaways?**
+Before we dive into Mongoose, however, let's talk a bit about about Mongo and NoSQL databases. **What are some of your takeaways?**
 
 <details>
   <summary><strong>What is a NoSQL database?</strong></summary>
@@ -57,7 +57,7 @@ It's fast.
 
 Many web apps already implement object-oriented Javascript.
 * If we're using objects in both the back-end and front-end, that makes handling and sending data between the client and a database much easier.
-* No need for type conversion (e.g., making sure a Ruby hash is being served as JSON).
+* No need for type conversion (e.g. making sure a Ruby hash is being served as JSON).
 
 #### Example MongoDB Commands
 
@@ -65,9 +65,9 @@ Even though you won't be writing much Mongo in WDI, we will be using some MongoD
 * `show dbs` - Show a list of all databases
 * `use database-name` - Connect to a database
 * `show collections` - List the collections in a database
-* `db.students.find()` - List all students in a student collection
+* `db.authors.find()` - List all authors in a author collection
 
-## Mongoose (5 minutes / 0:15)
+## Mongoose
 
 ![mongoose.js](https://www.filepicker.io/api/file/KDQZV88GTIaQn6p0GagE)
 
@@ -94,7 +94,7 @@ kitty.save(err => {
 });
 ```
 
-## You Do: Initial Set Up for Reminders (5 minutes / 0:20)
+## You Do: Initial Set Up for Reminders
 
 During today's in-class exercises, you will be creating a two-model todo app using Mongoose and MongoDB.
 
@@ -113,11 +113,11 @@ Follow these steps...
 >
 > [Solution Code](https://github.com/ga-wdi-exercises/reminders_mongo/tree/mongoose-solution)
 
-## I Do: Mongoose and Connection Set Up (5 minutes / 0:25)
+## I Do: Mongoose and Connection Set Up
 
-For today's in-class demonstrations, we will be creating an app that uses two models: Students and Projects. After each demo, you will apply the same functionality to your todo app.
+After each demo, you will apply the same functionality to your Reminders app.
 
-> This means you should not be following along when I am building the Student-Project app.
+> This means you should not be following along when I am building the Reminders app.
 
 Let's begin by installing Mongoose...
 
@@ -130,28 +130,28 @@ In order to have access to `mongoose` in our application, we need to explicitly 
 ```js
 // db/schema.js
 
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/students');
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/authors");
 ```
 
-> The name above `students` will be the name of the database stored in MongoDB
+> The name above `authors` will be the name of the database stored in MongoDB
 
 ```js
 // db/schema.js
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/students');
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/authors");
 
 // Now that we're connected, let's save that connection to the database in a variable.
 var db = mongoose.connection;
 
 // Will log an error if db can't connect to MongoDB
-db.on('error', err => {
-  console.log(err);
+db.on("error", err => {
+    console.log(err);
 });
 
 // Will log "database has been connected" if it successfully connects.
-db.once('open', () => {
-  console.log("database has been connected!");
+db.once("open", () => {
+    console.log("database has been connected!");
 });
 ```
 
@@ -161,13 +161,13 @@ Now let's run our `db/schema.js` file...
 $ node db/schema.js
 ```
 
-## You Do: Install Mongoose and Connection (5 min / 0:30)
+## You Do: Install Mongoose and Connection
 
 Follow the instructions in the previous section to require mongoose in your Reminders app.
 
 > [Solution](https://github.com/ga-wdi-exercises/reminders_mongo/blob/267a908faaae06ab4c35da6d671a867cf1bc6426/db/schema.js)
 
-## I Do: Mongoose Schema & Models (10 minutes / 0:40)
+## I Do: Mongoose Schema & Models
 
 #### What Is a Mongoose Schema?
 
@@ -180,16 +180,15 @@ Here's an example of a Mongoose schema...
 // db/schema.js
 
 // First, we instantiate a namespace for our Schema constructor defined by mongoose.
-var Schema = mongoose.Schema
+var Schema = mongoose.Schema;
 
-var StudentSchema = new Schema({
+var AuthorSchema = new Schema({
   name: String,
   age: Number
 });
 
-var ProjectSchema = new Schema({
-  title: String,
-  unit: String
+var ReminderSchema = new Schema({
+  body: String
 });
 ```
 
@@ -201,42 +200,41 @@ Mongoose Models will represent documents in our database.
 ```js
 // db/schema.js
 
-var Schema = mongoose.Schema
+var Schema = mongoose.Schema;
 
-var StudentSchema = new Schema({
+var AuthorSchema = new Schema({
   name: String,
   age: Number
 });
 
-var ProjectSchema = new Schema({
-  title: String,
-  unit: String
+var ReminderSchema = new Schema({
+  body: String
 });
 
-var Student = mongoose.model("Student", StudentSchema);
-var Project = mongoose.model("Project", ProjectSchema)
+var Author = mongoose.model("Author", AuthorSchema);
+var Reminder = mongoose.model("Reminder", ReminderSchema);
 ```
 
 `.model()` makes a copy of a schema.
 * The first argument is the singular name of the collection your model is for. Mongoose automatically looks for the plural version of your model name when creating a collection.
-* That means the `Student` model is for the `students` collection in the database.
+* That means the `Author` model is for the `authors` collection in the database.
 
-## Collections: Embedded Documents & References (10 minutes / 0:50)
+## Collections: Embedded Documents & References
 
 Let's add another model to `db/schema.js`.
-* We will be adding a schema for `Project` since we want to create an application that tracks Students and Projects
-* Like a one-to-many relationship in a relational database, a Student will have many Projects.
+* We will be adding a schema for `Reminder` since we want to create an application that tracks Authors and Reminders
+* Like a one-to-many relationship in a relational database, an Author will have many Reminders.
 
 With ActiveRecord, we defined a one-to-many relationship like so...
 
 ```rb
-class Students < ActiveRecord::Base
-  has_many :projects
+class Authors < ActiveRecord::Base
+  has_many :reminders
 end
 
 
-class Projects < ActiveRecord::Base
-  belongs_to :student
+class Reminders < ActiveRecord::Base
+  belongs_to :author
 end
 ```
 
@@ -251,26 +249,24 @@ In Mongoose, we will do this using **embedded documents**.
 ```js
 // db/schema.js
 
-var Schema = mongoose.Schema
+var Schema = mongoose.Schema;
 
-var ProjectSchema = new Schema({
-  title: String,
-  unit: String
-})
+var ReminderSchema = new Schema({
+  body: String
+});
 
-var StudentSchema = new Schema({
+var AuthorSchema = new Schema({
   name: String,
   age: Number,
-  projects: [ProjectSchema]
-})
+  reminders: [ReminderSchema]
+});
 
-var Student = mongoose.model("Student", StudentSchema);
-var Project = mongoose.model("Project", ProjectSchema);
-
+var Author = mongoose.model("Author", AuthorSchema);
+var Reminder = mongoose.model("Reminder", ReminderSchema);
 ```
-> The projects key of your `StudentSchema` documents will contain a special array that has specific methods to work with embedded documents.
+> The reminders key of your `AuthorSchema` documents will contain a special array that has specific methods to work with embedded documents.
 >
-> The Project Schema must be defined prior to our main Student Schema.
+> The Reminder Schema must be defined prior to our main Author Schema.
 
 #### Advantages
 
@@ -290,22 +286,23 @@ Similar to how we use foreign keys to represent a one-to-many relationship in Po
 ```js
 // db/schema.js
 
-var Schema = mongoose.Schema
-var ObjectId = Schema.ObjectId
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
 
-var ProjectSchema = new Schema({
-  title: String,
-  unit: String
+var Schema = mongoose.Schema;
+
+var ReminderSchema = new Schema({
+  body: String
 });
 
-var StudentSchema = new Schema({
+var AuthorSchema = new Schema({
   name: String,
   age: Number,
-  projects: [ {type: Schema.ObjectId, ref: "Project"}]
+  reminders: [{type: Schema.ObjectId, ref: "Reminder"}]
 });
 
-var Student = mongoose.model("Student", StudentSchema);
-var Project = mongoose.model("Project", ProjectSchema);
+var Author = mongoose.model("Author", AuthorSchema);
+var Reminder = mongoose.model("Reminder", ReminderSchema);
 ```
 
 > Since we are using an id to refer to other objects, we use the ObjectId type in the schema definition. The `ref` attribute must match the model used in the definition.
@@ -319,49 +316,49 @@ var Project = mongoose.model("Project", ProjectSchema);
 
 * Requires more work. Need to find both documents that have the references (i.e., multiple queries).
 
-## You Do: Set Up Schema and Models for Reminders (10 minutes / 1:00)
+## You Do: Set Up Schema and Models for Reminders
 
 Use the previous section to step up your Reminder and Author schemas and models.
 
 Place the following code at the bottom of your schema file. You'll know you set up your schema properly if, after running it, you see information about an Author printed to the console. Don't worry about what it means - we'll go over that soon in this lesson.
 
 ```js
-var john = new Author({name: "John"})
-var newReminder = new Reminder({body: "Don't forget to set up your schema properly"})
+var sora = new Author({name: "Sora", age: 16});
+var newReminder = new Reminder({body: "Don't forget to set up your schema properly"});
 
-john.reminders.push(newReminder)
+sora.reminders.push(newReminder);
 
-john.save((err, author) => {
+sora.save((err, author) => {
   if(err){
     console.error(err)
   } else {
     console.log(author)
     process.exit()
   }
-})
+});
 ```
 
 > [Solution](https://github.com/ga-wdi-exercises/reminders_mongo/blob/cfee42d3cfd0bf5f2581cc61ba712eb8e1b7777f/db/schema.js)
 
-## Break (10 minutes / 1:10)
+## Break
 
-## I Do: Create With Students and Projects (10 minutes / 1:20)
+## I Do: Create With Authors and Reminders
 
-First let's create an instance of our Student model. Here's one way of doing it...
+First let's create an instance of our Author model. Here's one way of doing it...
 
 ```js
 // db/schema.js
 
-// First we create a new student. It's just like generating a new instance with a constructor function!
-var anna = new Student({name: "Anna", age: 30});
+// First we create a new author. It's just like generating a new instance with a constructor function!
+var sora = new Author({name: "Sora", age: 16});
 
 // Then we save it to the database using .save
-anna.save((err, student) => {
+sora.save((err, author) => {
   if(err){
     console.log(err);
   }
   else{
-    console.log(student);
+    console.log(author);
   }
 });
 ```
@@ -373,12 +370,12 @@ We can also consolidate that into a single `.create` method, like so...
 ```js
 // db/schema.js
 
-Student.create({ name: 'Anna', age: 30 }, (err, student) => {
+Author.create({ name: "Sora", age: 16 }, (err, author) => {
   if (err){
     console.log(err);
   }
   else{
-    console.log(student);
+    console.log(author);
   }
 });
 ```
@@ -402,10 +399,10 @@ Oftentimes, when making a Mongoose query we will pass in a callback function. It
 If callbacks aren't your cup of tea, you can replace the callbacks we used above with promise methods.
 
 ```js
-var anna = new Student({name: "Anna", age: 30});
+var sora = new Author({name: "Sora", age: 16});
 
-anna.save().then(student => {   // We don't pass in `err` as an argument here...
-  console.log(student)
+sora.save().then(author => {   // We don't pass in `err` as an argument here...
+  console.log(author)
 }).catch(err => {               // ...instead, we pass it in here
   console.log(err)              // If there's an error, this `.catch` method will be triggered
 });
@@ -413,28 +410,27 @@ anna.save().then(student => {   // We don't pass in `err` as an argument here...
 
 ## I Do: Add Embedded Documents
 
-Next, let's create a Project...
+Next, let's create a Reminder...
 
 ```js
 // db/schema.js
+var sora = new Author({name: "Sora", age: 16});
+var newReminder = new Reminder({body: "Don't forget to set up your schema properly"});
 
-var anna = new Student({name: "Anna", age: 30});
-var project1 = new Project({title: "memory game", unit: "JS"});
+// Now we add that reminder to an author's collection / array of reminders.
+sora.reminders.push(reminder1)
 
-// Now we add that project to a student's collection / array of projects.
-anna.projects.push(project1)
-
-// In order to save that project to the student, we need to call `.save` on the student -- not the project.
-anna.save((err, student) => {
+// In order to save that reminder to the author, we need to call `.save` on the author -- not the reminder.
+sora.save((err, author) => {
   if(err){
     console.log(err)
   } else {
-    console.log(student + " was saved to our db!");
+    console.log(author + " was saved to our db!");
   }
 });
 ```
 
-## I Do: Seed Data (10 minutes / 1:30)
+## I Do: Seed Data
 
 Let's seed some data in our database. In order to do that, we need to first make sure we can connect `schema.js` to `seeds.js`. Let's add the following to `db/schema.js`...
 
@@ -445,8 +441,8 @@ Let's seed some data in our database. In order to do that, we need to first make
 
 // By adding `module.exports`, we can know reference these models in other files by requiring `schema.js`.
 module.exports = {
-  Student: Student,
-  Project: Project
+  Author: Author,
+  Reminder: Reminder
 };
 ```
 
@@ -457,8 +453,8 @@ And add the following to `db/seeds.js`...
 
 var Schema = require("./schema.js");
 
-var Student = Schema.Student
-var Project = Schema.Project
+var Author = Schema.Author;
+var Reminder = Schema.Reminder;
 ```
 
 Now let's call some methods in `db/schema.js` that will populate our database...
@@ -468,55 +464,55 @@ Now let's call some methods in `db/schema.js` that will populate our database...
 
 var Schema = require("./schema.js");
 
-var Student = Schema.Student
-var Project = Schema.Project
+var Author = Schema.Author;
+var Reminder = Schema.Reminder;
 
-// First we clear the database of existing students and projects.
-Student.remove({}, err => {
+// First we clear the database of existing authors and reminders.
+Author.remove({}, err => {
   if(err){
     console.log(err)
   }
 });
 
-Project.remove({}, err => {
+Reminder.remove({}, err => {
   if(err){
     console.log(err)
   }
 });
 
-// Now we generate instances of Student and Project.
-var becky = new Student({name: "becky"})
-var brandon = new Student({name: "brandon"})
-var tom = new Student({name: "tom"})
+// Now we generate instances of Author and Reminder.
+var george = new Author({name: "George", age: 68});
+var joanne = new Author({name: "Joanne", age: 51});
+var tom = new Author({name: "Tom", age: 71});
 
-var project1 = new Project({title: "Project 1", unit: "JS"})
-var project2 = new Project({title: "Project 2", unit: "Rails"})
-var project3 = new Project({title: "Project 3", unit: "Angular"})
-var project4 = new Project({title: "Project 4", unit: "Express"})
+var reminder1 = new Reminder({body: "Reminder 1: Learn JS"});
+var reminder2 = new Reminder({body: "Reminder 2: Learn Rails"});
+var reminder3 = new Reminder({body: "Reminder 3: Learn Angular"});
+var reminder4 = new Reminder({body: "Reminder 4: Learn Express"});
 
-var students = [becky, brandon, tom]
-var projects = [project1, project2, project3, project4]
+var authors = [george, joanne, tom];
+var reminders = [reminder1, reminder2, reminder3, reminder4];
 
-// Here we assign some projects to each student.
-for(var i = 0; i < students.length; i++){
-  students[i].projects.push(projects[i], projects[i+1])
-  students[i].save((err, student) => {
+// Here we assign some reminders to each author.
+for(var i = 0; i < authors.length; i++){
+  authors[i].reminders.push(reminders[i], reminders[i+1])
+  authors[i].save((err, author) => {
     if (err){
       console.log(err)
     } else {
-      console.log(student);
+      console.log(author);
     }
   })
 };
 
 // ...or you could use forEach instead of a for loop...
-students.forEach((student, i) => {
-  student.projects.push(projects[i], projects[i+1])   // Assigning each student multiple projects
-  student.save((err, student) => {
+authors.forEach((author, i) => {
+  author.reminders.push(reminders[i], reminders[i+1])   // Assigning each author multiple reminders
+  author.save((err, author) => {
     if (err){
       console.log(err)
     } else {
-      console.log(student);
+      console.log(author);
     }
   })
 })
@@ -529,18 +525,18 @@ Let's test if this all worked by opening Mongo in the Terminal...
 ```bash
 $ mongo
 $ show dbs
-$ use students
+$ use authors
 $ show collections
-$ db.students.find()
+$ db.authors.find()
 ```
 
-## You Do: Add Seed Data and Create to Reminders (15 minutes / 1:45)
+## You Do: Add Seed Data and Create to Reminders
 
 Now do the same thing with your Reminders app.
 
 > [Solution](https://github.com/ga-wdi-exercises/reminders_mongo/commit/9b5a93841df550516e04778066cb43bd790c11f8)
 
-## I Do: Mongoose Queries (10 minutes / 1:55)
+## I Do: Mongoose Queries
 
 Like Active Record, Mongoose provides us with a variety of helper methods that allow us to easily retrieve documents from our database.
 
@@ -564,56 +560,56 @@ Let's use `.find` to implement `index` functionality. We'll do that in a control
 
 ```bash
 $ mkdir controllers
-$ touch controllers/studentsController.js
+$ touch controllers/authorsController.js
 ```
 
-> We are adding a `controllers` directory and `studentsController.js` file to mimic how we might define a controller in an Express application. Like how our controllers helped us in Rails, we will be following similar REST conventions and using our controllers to listen for incoming requests and communication with our database.
+> We are adding a `controllers` directory and `authorsController.js` file to mimic how we might define a controller in an Express application. Like how our controllers helped us in Rails, we will be following similar REST conventions and using our controllers to listen for incoming requests and communication with our database.
 
 
 ```js
-// controllers/studentsController.js
+// controllers/authorsController.js
 
 var Schema = require("../db/schema.js");
-var Student = Schema.Student;
-var Project = Schema.Project;
+var Author = Schema.Author;
+var Reminder = Schema.Reminder;
 
-var studentsController = {
+var authorsController = {
   index(){
-    Student.find({}, (err, students) => {
-      console.log(students);
+    Author.find({}, (err, authors) => {
+      console.log(authors);
     });
   }
 };
 
-studentsController.index();
+authorsController.index();
 ```
 
-Run `$ node controllers/studentsController.js` in the terminal.
+Run `$ node controllers/authorsController.js` in the terminal.
 
 Now let's do `show`...
 
 ```js
-// controllers/studentsController.js
+// controllers/authorsController.js
 
-var studentsController = {
+var authorsController = {
   index(){
-    Student.find({}, (err, students) => {
-      console.log(students);
+    Author.find({}, (err, authors) => {
+      console.log(authors);
     });
   },
   show(req){
-    Student.findOne({name: req.name}, (err, student) => {
-      console.log(student);
+    Author.findOne({name: req.name}, (err, author) => {
+      console.log(author);
     });
   }
 };
 
-studentsController.show({name: "becky"});
+authorsController.show({name: "Tom"});
 ```
 
-> `req` here stands for "request." While we don't have to name the argument that way, it is common practice. It represents information that is being sent to a server. In this case, it contains information about the data in question: a single student.
+> `req` here stands for "request." While we don't have to name the argument that way, it is common practice. It represents information that is being sent to a server. In this case, it contains information about the data in question: a single author.
 
-## You Do: Index, Show, Update and Delete (15 minutes / 2:10)
+## You Do: Index, Show, Update and Delete
 
 Follow the above instructions to implement `index` and `show` for the Author model.
 
@@ -630,31 +626,31 @@ If you finish early...
 * Create a controller method that clears all of an Author's Reminders (i.e., the author has no reminders)
 * Check out the Validations section at the end of this lesson
 
-## Break (5 minutes / 2:15)
+## Break
 
-## I Do: Update & Delete (10 minutes / 2:25)
+## I Do: Update & Delete
 
 <details>
   <summary><strong>This is how to <code>update</code>...</strong></summary>
 
   ```js
-  // controllers/studentsController.js
-  var studentsController = {
+  // controllers/authorsController.js
+  var authorsController = {
 
     // This method takes two arguments: (1) the old instance and (2) what we want to update it with.
     update(req, update){
-      Student.findOneAndUpdate({name: req.name}, {name: update.name}, {new: true}, (err, student) => {
+      Author.findOneAndUpdate({name: req.name}, {name: update.name}, {new: true}, (err, author) => {
         if(err) {
           console.log(err)
         }
         else {
-          console.log(student);
+          console.log(author);
         }
       });
     }
   };
 
-  studentsController.update({name: "becky"}, {name: "Sarah"});
+  authorsController.update({name: "Tom"}, {name: "Voldemort"});
   ```
 
   > We are inserting {new: true} as an additional option. If we do not, we will get the old document as a return value -- not the updated one.
@@ -666,11 +662,11 @@ If you finish early...
   <summary><strong>This is how to <code>delete</code>...</strong></summary>
 
   ```js
-  // controllers/studentsController.js
+  // controllers/authorsController.js
 
-  var studentsController = {
+  var authorsController = {
     destroy(req){
-      Student.findOneAndRemove(req, (err, docs) => {
+      Author.findOneAndRemove(req, (err, docs) => {
         if(err){
           console.log(err);
         }
@@ -681,7 +677,7 @@ If you finish early...
     }
   };
 
-  studentsController.destroy({name: "bob"});
+  authorsController.destroy({name: "George"});
   ```
 
 </details>
@@ -816,10 +812,11 @@ UserSchema.pre("save", function(next) {
 
 ## Homework
 
-After this class you should be able to complete [Emergency Compliment](https://github.com/ga-wdi-exercises/compliment-express) and Part I of [YUM](https://github.com/ga-wdi-exercises/yum).
+After this class you should be able to complete Part I of [YUM](https://github.com/ga-wdi-pvd/yum).
 
 ## Additional Resources
 
+* [GA DC Lesson](https://github.com/ga-wdi-lessons/mongoose-intro)
 * [Mongoose Documentation](http://mongoosejs.com/index.html)
 * [Embedded Docs versus Multiple Collections](https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=mongoose%20embedded%20versus%20collections)
 * [Active Record Versus Mongoose](active_record_comparison.md)
