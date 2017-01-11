@@ -94,7 +94,7 @@ kitty.save(err => {
 });
 ```
 
-## You Do: Initial Set Up for Reminders
+## You Do: Initial Set Up
 
 During today's in-class exercises, you will be creating a two-model todo app using Mongoose and MongoDB.
 
@@ -793,7 +793,7 @@ UserSchema.pre("save", function(next) {
 * What are embedded documents in Mongoose?
 * Why do we create a Schema in Mongoose?
 * What are 3 Mongoose query methods?
-* Bonus: What are common built in validations for Mongoose? Why would we use them?
+* **Bonus**: What are common built in validations for Mongoose? Why would we use them?
 
 ## Homework
 
