@@ -65,7 +65,7 @@ Even though you won't be writing much Mongo in WDI, we will be using some MongoD
 * `show dbs` - Show a list of all databases
 * `use database-name` - Connect to a database
 * `show collections` - List the collections in a database
-* `db.authors.find()` - List all authors in a author collection
+* `db.authors.find()` - List all authors in an author collection
 
 ## Mongoose
 
@@ -99,7 +99,7 @@ kitty.save(err => {
 During today's in-class exercises, you will be creating a two-model todo app using Mongoose and MongoDB.
 
 It will have two models: Authors and Reminders.
-* Each Author has a `name` (string)
+* Each Author has a `name` (string) and an `age` (number)
 * Each Reminder has a `body` (string)
 
 Authors will have many Reminders, although we won't be implementing that using a SQL relationship.
@@ -125,7 +125,7 @@ Let's begin by installing Mongoose...
 $ npm install --save mongoose
 ```
 
-In order to have access to `mongoose` in our application, we need to explicitly require mongoose and open a connection to the test database on locally...
+In order to have access to `mongoose` in our application, we need to explicitly require mongoose and open a connection to test the database on locally...
 
 ```js
 // db/schema.js
@@ -228,12 +228,12 @@ Let's add another model to `db/schema.js`.
 With ActiveRecord, we defined a one-to-many relationship like so...
 
 ```rb
-class Authors < ActiveRecord::Base
+class Author < ApplicationRecord
   has_many :reminders
 end
 
 
-class Reminders < ActiveRecord::Base
+class Reminder < ApplicationRecord
   belongs_to :author
 end
 ```
@@ -316,33 +316,15 @@ var Reminder = mongoose.model("Reminder", ReminderSchema);
 
 * Requires more work. Need to find both documents that have the references (i.e., multiple queries).
 
-## You Do: Set Up Schema and Models for Reminders
+## You Do: Set Up Schema and Models
 
 Use the previous section to step up your Reminder and Author schemas and models.
-
-Place the following code at the bottom of your schema file. You'll know you set up your schema properly if, after running it, you see information about an Author printed to the console. Don't worry about what it means - we'll go over that soon in this lesson.
-
-```js
-var sora = new Author({name: "Sora", age: 16});
-var newReminder = new Reminder({body: "Don't forget to set up your schema properly"});
-
-sora.reminders.push(newReminder);
-
-sora.save((err, author) => {
-  if(err){
-    console.error(err)
-  } else {
-    console.log(author)
-    process.exit()
-  }
-});
-```
 
 > [Solution](https://github.com/ga-wdi-exercises/reminders_mongo/blob/cfee42d3cfd0bf5f2581cc61ba712eb8e1b7777f/db/schema.js)
 
 ## Break
 
-## I Do: Create With Authors and Reminders
+## I Do: Add Create
 
 First let's create an instance of our Author model. Here's one way of doing it...
 
@@ -418,17 +400,20 @@ var sora = new Author({name: "Sora", age: 16});
 var newReminder = new Reminder({body: "Don't forget to set up your schema properly"});
 
 // Now we add that reminder to an author's collection / array of reminders.
-sora.reminders.push(reminder1)
+sora.reminders.push(newReminder)
 
 // In order to save that reminder to the author, we need to call `.save` on the author -- not the reminder.
 sora.save((err, author) => {
   if(err){
     console.log(err)
   } else {
-    console.log(author + " was saved to our db!");
+    console.log(`${author} was saved to our db!`);
   }
 });
 ```
+## You Do: Add Create
+Make sure the above sections are added to your code.
+> [Solution](https://github.com/ga-wdi-exercises/reminders_mongo/commit/9b5a93841df550516e04778066cb43bd790c11f8)
 
 ## I Do: Seed Data
 
@@ -439,7 +424,7 @@ Let's seed some data in our database. In order to do that, we need to first make
 
 // The rest of our schema code is up here...
 
-// By adding `module.exports`, we can know reference these models in other files by requiring `schema.js`.
+// By adding `module.exports`, we can now reference these models in other files by requiring `schema.js`.
 module.exports = {
   Author: Author,
   Reminder: Reminder
@@ -530,7 +515,7 @@ $ show collections
 $ db.authors.find()
 ```
 
-## You Do: Add Seed Data and Create to Reminders
+## You Do: Add Seed Data
 
 Now do the same thing with your Reminders app.
 
@@ -802,13 +787,13 @@ UserSchema.pre("save", function(next) {
 
 -----
 
-## Closing / Questions
+## Review Questions
 
 * How is Mongoose used to interact with MongoDB?
 * What are embedded documents in Mongoose?
 * Why do we create a Schema in Mongoose?
-* What do we need after Mongoose queries?
-* What are common built in validations for Mongoose? Why would we use them?
+* What are 3 Mongoose query methods?
+* Bonus: What are common built in validations for Mongoose? Why would we use them?
 
 ## Homework
 
